@@ -1,5 +1,6 @@
 package org.graylog2.logging;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -30,6 +31,51 @@ public class GelfHandler
   private boolean extractStacktrace;
   private Map<String, String> fields;
 
+  public void setGraylogHost(String value)
+  {
+    this.graylogHost = value;
+  }
+
+  public void setGraylogPort(String value)
+  {
+    this.graylogPort = Integer.parseInt(value);
+  }
+
+  public void setOriginHost(String value)
+  {
+    this.originHost = value;
+  }
+
+  public void setFacility(String value)
+  {
+    this.facility = value;
+  }
+
+  public void setExtractStacktrace(String value)
+  {
+    this.extractStacktrace = Boolean.parseBoolean(value);
+  }
+
+  public void setFields(String value)
+  {
+    fields = new HashMap<String, String>();
+
+    for(String field : value.split(","))
+    {
+      String[] keyValPair = field.split("=");
+      String fieldKey = keyValPair[0];
+      String fieldVal = keyValPair[1];
+      fields.put(fieldKey, fieldVal);
+    }
+  }
+
+  public void setErrorManagerFromString(String className)
+    throws ClassNotFoundException, InstantiationException, IllegalAccessException
+  {
+    Class clazz = Class.forName(className);
+    setErrorManager((java.util.logging.ErrorManager)clazz.newInstance());
+  }
+
   public GelfHandler()
   {
     final LogManager manager = LogManager.getLogManager();
@@ -43,11 +89,11 @@ public class GelfHandler
     fields = new HashMap<String, String>(  );
     while( true )
     {
-    final String property = manager.getProperty( prefix + ".additionalField." + fieldNumber );
+      final String property = manager.getProperty( prefix + ".additionalField." + fieldNumber );
       if ( null == property )
-    {
-      break;
-    }
+      {
+        break;
+      }
       final int index = property.indexOf( '=' );
       if( -1 != index )
       {
@@ -80,7 +126,7 @@ public class GelfHandler
     }
     catch ( final Exception e )
     {
-      //ignore
+      reportError("Error init", e, 0);
     }
   }
 
@@ -126,19 +172,21 @@ public class GelfHandler
       {
         gelfSender = new GelfSender( graylogHost, graylogPort );
       }
-      catch ( UnknownHostException e )
+      catch ( Exception e )
       {
         reportError( "Unknown Graylog2 hostname:" + graylogHost, e, ErrorManager.WRITE_FAILURE );
       }
-      catch ( SocketException e )
+    }
+    if ( null != gelfSender )
+    {
+      if( !gelfSender.sendMessage( makeMessage( record ) ) )
       {
-        reportError( "Socket exception", e, ErrorManager.WRITE_FAILURE );
+        reportError("Error sending gelf message to graylog", null, 0);
       }
     }
-    if ( null == gelfSender ||
-         !gelfSender.sendMessage( makeMessage( record ) ) )
+    else
     {
-      reportError( "Could not send GELF message", null, ErrorManager.WRITE_FAILURE );
+      reportError("Gelf sender is null", new Exception("gelf sender is null"), 0);
     }
   }
 
