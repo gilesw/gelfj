@@ -23,12 +23,21 @@
         <url>git@github.com:gilesw/gelfj.git</url>
     </scm>
 
-    <!-- Pull in company wide details. -->
-    <parent>
-        <artifactId>semantico-parent</artifactId>
-        <groupId>com.semantico</groupId>
-        <version>2</version>
-    </parent>
+  <distributionManagement>
+    <!-- use the following if you're not using a snapshot version. -->
+    <repository>
+      <id>nexus-releases</id>
+      <name>Semantico Releases</name>
+      <url>http://nexus.semantico.net/content/repositories/third-party-releases</url>
+    </repository>
+    <!-- use the following if you ARE using a snapshot version. -->
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>Semantico Snapshots</name>
+      <url>http://nexus.semantico.net/content/repositories/third-party-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 
     <licenses>
         <license>
