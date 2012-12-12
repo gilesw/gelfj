@@ -23,10 +23,11 @@
         <url>git@github.com:gilesw/gelfj.git</url>
     </scm>
 
+    <!-- Pull in company wide details. -->
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <artifactId>semantico-parent</artifactId>
+        <groupId>com.semantico</groupId>
+        <version>2</version>
     </parent>
 
     <licenses>
