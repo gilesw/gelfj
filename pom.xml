@@ -18,8 +18,8 @@
     </properties>
 
     <scm>
-        <connection>scm:git@github.com:gilesw/gelfj.git</connection>
-        <developerConnection>scm:git@github.com:gilesw/gelfj.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com:gilesw/gelfj.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:gilesw/gelfj.git</developerConnection>
         <url>git@github.com:gilesw/gelfj.git</url>
     </scm>
 
